@@ -5,6 +5,7 @@ import numpy as np
 from rjd import *
 
 #Most of the code of this file is taken from https://github.com/mruffini/SpectralMethod
+#
 
 # Joint Diagonalization for Learning Latent Variable Models
 def learn_LVM_RJD(M1, M2, M3, Whiten, k, N=0, deflat = True):
@@ -158,32 +159,6 @@ def learn_LVM_SVTD(M1, M2, M3, Whiten, k):
 
     return M, omega
 
-def coherence(X, M, l=20):
-    k = M.shape[1]
-    coherences = []
-    sorted_indices = np.argsort(M,0)
-    sorted_indices = np.flip(sorted_indices, axis=0)
-    sorted_indices = sorted_indices[:l,:]
-
-    for n in range(k):
-        coherence = 0
-        for j in range(1,l):
-            d_i = 0
-            d_ij = 0
-            for i in range(j):
-                w_i = sorted_indices[i,n]
-                w_j = sorted_indices[j,n]
-                #print(w_i, w_j)
-                for doc in X:
-                    if doc[w_i] != 0:
-                        d_i+=1
-                        if doc[w_j] != 0:
-                            d_ij += 1
-                coherence += np.log((d_ij + 1) / d_i)
-            #print(d_i, d_ij)
-        coherences.append(coherence)
-    return np.mean(np.array(coherences))
-
 def RetrieveTensorsST(X, k):
     """
     Returns a the three tensors M1, M2 and M3 to be used
@@ -236,6 +211,32 @@ def RetrieveTensorsST(X, k):
         M3[j] = Whiten.T @ wM3 @ Whiten
 
     return M1, M2, M3, Whiten
+
+# Coherence score calculation
+def coherence(X, M, l=20):
+    k = M.shape[1]
+    coherences = []
+    sorted_indices = np.argsort(M,0)
+    sorted_indices = np.flip(sorted_indices, axis=0)
+    sorted_indices = sorted_indices[:l,:]
+
+    for n in range(k):
+        coherence = 0
+        for j in range(1,l):
+            d_i = 0
+            d_ij = 0
+            for i in range(j):
+                w_i = sorted_indices[i,n]
+                w_j = sorted_indices[j,n]
+                for doc in X:
+                    if doc[w_i] != 0:
+                        d_i+=1
+                        if doc[w_j] != 0:
+                            d_ij += 1
+                coherence += np.log((d_ij + 1) / d_i)
+        coherences.append(coherence)
+    return np.mean(np.array(coherences))
+
 
 def print_top_words_table(M, omega, num_words, num_topics, id2word):
     """

@@ -88,7 +88,7 @@ def experiment_helper(input_arrays, repeats, with_error, error_levels, \
             errors_rand[i] += offdiagonal_frobenius_square(Q.T @ test_array @ Q)
             
             start = time()
-            Q = randomized_jd_deflat_complex(test_array,trails)
+            Q = randomized_jd_deflat(test_array,trails)
             end = time()
             times_rand_de[i] += end - start
             errors_rand_de[i] += offdiagonal_frobenius_square(Q.T @ test_array @ Q)

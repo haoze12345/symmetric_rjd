@@ -16,4 +16,4 @@ def overall_experiments(repeats = 100, trails = 3, MA= False, norm_type = 2):
             experiment_helper_MA(C, repeats, trails= trails, error_levels=error_levels,\
                             with_error = False, d = n, n = p, mixing_matrix=Q)
 
-overall_experiments(1,3, False, 'fro')
+overall_experiments(100,3, False, 'fro')

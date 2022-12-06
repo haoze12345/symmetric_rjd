@@ -39,17 +39,25 @@ def randomized_jd_deflat_threshold(AA, threshold = 1e-5, max_trials = 3):
         return np.array([[1]])
     
     min_error = np.inf
-    best_Q, final_AA, success_indices, Q, min_indices = None, None, None, None, None
+    best_Q, final_AA, success_indices, error_sum, Q, min_indices = None, None, None, None, None, None
     success = False
 
     for i in range(max_trials):
-        Q = diagonalize_random_combination(AA,d)
+        mu = np.random.normal(0,1,d)
+        A_mu = np.einsum('ijk,i->jk',AA, mu)
+        _, Q = np.linalg.eigh(A_mu)
         AA_new = Q.T @ AA @ Q
         error_cols = offdiag_frobenius_square_by_column(AA_new)
-        
+        error_col_index = np.argmin(error_cols)
+        error_col_index = [error_col_index]
+        cur_min_error = np.sum(error_cols[error_col_index])
         cur_success_indices = error_cols <= threshold
         num_cols = np.sum(cur_success_indices)
-
+        if cur_min_error < min_error:
+            final_AA = AA_new
+            min_indices = error_col_index
+            best_Q = Q
+            min_error = cur_min_error
         if num_cols > 0:
             final_AA = AA_new
             best_Q = Q
@@ -57,28 +65,16 @@ def randomized_jd_deflat_threshold(AA, threshold = 1e-5, max_trials = 3):
             success_indices = cur_success_indices
             break
 
-        error_col_index = np.argmin(error_cols)
-        error_col_index = error_col_index
-        cur_min_error = error_cols[error_col_index]
-        if cur_min_error < min_error:
-            final_AA = AA_new
-            min_indices = error_col_index
-            best_Q = Q
-            min_error = cur_min_error
-
     if np.sum(success_indices) == n:
         return best_Q
-
-    failed_indices = None
     if not success:
         success_indices = min_indices
-        failed_indices = [i for i in range(n) if i!=min_indices]
     else:
-        failed_indices = [i for i in range(n) if success_indices[i]==0 ]
         success_indices = [i for i in range(n) if success_indices[i]!=0 ]
-    AA_deflated = final_AA[:, failed_indices, :][:,:,failed_indices]
+    AA_deflated = np.delete(np.delete(final_AA, success_indices, axis=1),success_indices,axis=2)
     Q_deflated = randomized_jd_deflat_threshold(AA_deflated, threshold, max_trials)
     Q_suc = best_Q[:,success_indices]
-    Q_left = best_Q[:,failed_indices]
+    Q_left = np.delete(best_Q,success_indices,axis = 1)
     Q_left = Q_left @ Q_deflated
     return np.column_stack([Q_suc,Q_left])
+

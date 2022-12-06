@@ -76,7 +76,7 @@ def experiment_helper(input_arrays, repeats, with_error, error_levels, \
             start = time()
             n = input_arrays.shape[2]
             B0 = np.eye(n)
-            B, _ = qndiag(test_array, B0 = B0, ortho=True, tol = 1e-6, check_sympos = True)  # use the algorithm
+            B, _ = qndiag(test_array, B0 = B0, ortho=True, tol = 1e-9, check_sympos = True)  # use the algorithm
             end = time()
             times_qndiag[i] += end - start
             errors_qndiag[i] += offdiagonal_frobenius_square(B @ test_array @ B.T)

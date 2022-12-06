@@ -68,13 +68,17 @@ def randomized_jd_deflat_threshold(AA, threshold = 1e-5, max_trials = 3):
 
     if np.sum(success_indices) == n:
         return best_Q
+
+    failed_indices = None
     if not success:
         success_indices = min_indices
+        failed_indices = [i for i in range(n) if i!=min_indices]
     else:
+        failed_indices = [i for i in range(n) if success_indices[i]==0 ]
         success_indices = [i for i in range(n) if success_indices[i]!=0 ]
-    AA_deflated = np.delete(np.delete(final_AA, success_indices, axis=1),success_indices,axis=2)
+    AA_deflated = final_AA[:, failed_indices, :][:,:,failed_indices]
     Q_deflated = randomized_jd_deflat_threshold(AA_deflated, threshold, max_trials)
     Q_suc = best_Q[:,success_indices]
-    Q_left = np.delete(best_Q,success_indices,axis = 1)
+    Q_left = best_Q[:,failed_indices]
     Q_left = Q_left @ Q_deflated
     return np.column_stack([Q_suc,Q_left])

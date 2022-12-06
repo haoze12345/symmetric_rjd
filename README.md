@@ -14,4 +14,4 @@ To reproduce the results in Section 5.2 on BSS, go to the folder bss_experiment
 To reproduce the results in Section 5.3 on LVM, go to the folder lvm_experiment
  
 ## EEG Cospectra experiment
-To reproduce the results in Section 5.1 on EGG Cospectra, run the notebook cospectra_bench.ipynb the data cospectra.mat is from https://github.com/Marco-Congedo/STUDIES/tree/master/AJD-Algos-Benchmark
+To reproduce the results in Section 5.1 on EGG Cospectra, run the notebook cospectra_bench.ipynb the data cospectra.mat needed for the notebook can be downloaded from https://github.com/Marco-Congedo/STUDIES/tree/master/AJD-Algos-Benchmark

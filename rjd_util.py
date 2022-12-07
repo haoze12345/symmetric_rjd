@@ -31,7 +31,7 @@ def search_threshold(AA,  trails):
         AA_new = Q.T @ AA @ Q
         error_cols = offdiag_frobenius_square_by_column(AA_new)
         final_min = min(final_min,np.min(error_cols))
-    return 2 * final_min
+    return 2.5 * final_min
 
 def randomized_jd_deflat_threshold(AA, threshold = 1e-5, max_trials = 3):
     d,n,_ = AA.shape
@@ -43,9 +43,7 @@ def randomized_jd_deflat_threshold(AA, threshold = 1e-5, max_trials = 3):
     success = False
 
     for i in range(max_trials):
-        mu = np.random.normal(0,1,d)
-        A_mu = np.einsum('ijk,i->jk',AA, mu)
-        _, Q = np.linalg.eigh(A_mu)
+        Q = diagonalize_random_combination(AA,d)
         AA_new = Q.T @ AA @ Q
         error_cols = offdiag_frobenius_square_by_column(AA_new)
         error_col_index = np.argmin(error_cols)

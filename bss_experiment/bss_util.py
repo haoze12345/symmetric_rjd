@@ -5,6 +5,7 @@ from numpy.linalg import eig,pinv
 import numpy as np
 from time import  time
 
+#Code is modified from the github repo https://github.com/gbeckers/jadeR by Gabriel Beckers
 def jadeR(X, jd_function, m=None, verbose=False, transpose=True, original=False):
     """
     Blind separation of real signals with JADE.
